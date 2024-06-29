@@ -1,11 +1,17 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from "../../assets/img/argentBankLogo.webp";
 import { AuthContext } from '../../services/AuthContext';
 import "./navbar.css";
 
 export default function Navbar() {
-  const { isAuthenticated, username, logout } = useContext(AuthContext);
+  const { isAuthenticated, userName, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="main-nav">
@@ -20,11 +26,11 @@ export default function Navbar() {
       <div>
         {isAuthenticated ? (
           <>
-            <span className="main-nav-item">
+            <Link className="main-nav-item" to="/user">
               <i className="fa fa-user-circle"></i>
-              {username}
-            </span>
-            <Link className="main-nav-item" to="/" onClick={logout}>
+              {userName}
+            </Link>
+            <Link className="main-nav-item" to="/" onClick={handleLogout}>
               <i className="fa fa-sign-out"></i>
               Sign Out
             </Link>
