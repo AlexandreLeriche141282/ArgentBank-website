@@ -1,36 +1,23 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../services/AuthContext';
+import { login } from '../../redux/slice/authSlice';
 import './signIn.css';
 
 export default function SignIn() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { error, loading } = useSelector(state => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/user/login', {
-        email: username,
-        password: password,
-      });
-
-      const { token } = response.data.body;
-      const userProfile = await axios.post('http://localhost:3001/api/v1/user/profile', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const userName = userProfile.data.body.firstName; // Assumez que vous souhaitez afficher le prénom
-
-      login(token, userName);
+      await dispatch(login({ email: username, password })).unwrap();
       navigate('/user');
-    } catch (error) {
-      setError('Invalid username or password');
+    } catch (err) {
+      // L'erreur est gérée dans le state Redux, pas besoin de setError ici
     }
   };
 
@@ -63,7 +50,9 @@ export default function SignIn() {
             <label htmlFor="remember-me">Remember me</label>
           </div>
           {error && <p className="error">{error}</p>}
-          <button type="submit" className="sign-in-button">Sign In</button>
+          <button type="submit" className="sign-in-button" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </button>
           <p>New customer? <a href="./user.html">Sign Up</a></p>
         </form>
       </section>
