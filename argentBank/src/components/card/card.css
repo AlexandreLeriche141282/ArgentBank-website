@@ -4,7 +4,9 @@
     flex-direction: column;
     height: 300px;
   }
-  
+  .features > * {
+    flex: 1;
+  }
   @media (min-width: 920px) {
     .features {
       flex-direction: row;
@@ -12,6 +14,7 @@
   }
   .card-feature {
     padding: 2.5rem;
+    
   }
   .feature-icon {
     width: 100px;

@@ -1,15 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import Logo from "../../assets/img/argentBankLogo.webp";
-import { AuthContext } from '../../services/AuthContext';
+import { logout, loadUser } from '../../redux/slice/authSlice';
+import { clearProfileData } from '../../redux/slice/editProfileSlice';
 import "./navbar.css";
 
 export default function Navbar() {
-  const { isAuthenticated, userName, logout } = useContext(AuthContext);
+  const { isAuthenticated, user } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      dispatch(loadUser());
+    }
+  }, [isAuthenticated, user, dispatch]);
+
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
+    dispatch(clearProfileData());
     navigate('/');
   };
 
@@ -28,7 +38,7 @@ export default function Navbar() {
           <>
             <Link className="main-nav-item" to="/user">
               <i className="fa fa-user-circle"></i>
-              {userName}
+              {user?.userName || user?.firstName || 'User'}
             </Link>
             <Link className="main-nav-item" to="/" onClick={handleLogout}>
               <i className="fa fa-sign-out"></i>
