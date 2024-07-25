@@ -58,6 +58,30 @@ paths:
         '500':
           description: Internal Server Error
   /user/profile:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Get User Profile
+      description: API for fetching the user profile
+      parameters:
+        - type: string
+          in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          schema:
+            $ref: '#/definitions/UserProfile'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
     post:
       security:
         - Bearer: []
@@ -65,11 +89,9 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -94,185 +116,132 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
-  /user/account:
-    post: 
-      tags:
-        - Transactions Module
-      summary: All accounts
-      description: API for retrieving all user account
+  /transactions:
+    get:
       security:
         - Bearer: []
-      responses: 
-        '200':
-          description: All accounts retrieved successfully
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/AccountResponse'
-        '401':
-          description: Unauthorized user
-        '500':
-          description: Internal Server Error
-  /account/{accountID}/transactions:
-    post:
       tags:
         - Transactions Module
-      summary: Account transactions
-      description: API for retrieving list of transactions assiocated with an account
-      security: 
-        - Bearer: []
+      summary: Get all transactions
+      description: Retrieve a list of all transactions for the authenticated user
       parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/TransactionList'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions Module
+      summary: Get Transaction Details
+      description: Retrieve details of a specific transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+          type: string
         - in: path
-          name: accountID
-          description: ID of an account
+          name: transactionId
+          description: ID of the transaction
           required: true
           type: string
       responses:
         '200':
-          description: All transactions retrieved successfully
-          schema: 
-            type: array
-            items:
-              $ref: '#/definitions/TransactionsResponse'
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Transaction'
         '401':
-          description: Unauthorized user
-        '404': 
-          description: Account not found
+          description: Unauthorized
+        '404':
+          description: Transaction not found
         '500':
           description: Internal Server Error
-  /transactions/{transactionID}/category:
     put:
       tags:
         - Transactions Module
-      summary: Update transaction's category
-      description: API for updating category of transaction
-      security: 
-        - Bearer: []
+      summary: Update Transaction Category
+      description: Update the category for an existing transaction
       parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+          type: string
         - in: path
-          name: transactionID
-          description: ID of a transaction
+          name: transactionId
+          description: ID of the transaction
           required: true
           type: string
         - in: body
           name: category
-          description: Modified transaction's category
+          description: New category for the transaction
           required: true
           schema:
-            $ref: '#/definitions/TransactionCategory'
+            type: string
+            enum: [food, entertainment, utilities, housing, transportation, other]
       responses:
         '200':
-          description: Transaction's category modified successfully
-          schema: 
-            $ref: '#/definitions/TransactionCategory'
-        '401': 
-          description: Unauthorized user
-        '404': 
+          description: Transaction category updated successfully
+          schema:
+            $ref: '#/definitions/Transaction'
+        '401':
+          description: Unauthorized
+        '404':
           description: Transaction not found
-        '500': 
-          description: Internal Servor Error
-  /transactions/{transactionID}/note:
-    post:
-      tags:
-        - Transactions Module
-      summary: Add transaction's note
-      description: API for adding a note to a transaction
-      security: 
-        - Bearer: []
-      parameters:
-        - in: path
-          name: transactionID
-          description: ID of a transaction
-          required: true
-          type: string
-        - in: body
-          name: note
-          description: New transaction's note
-          required: true
-          schema: 
-            $ref: '#/definitions/TransactionNote'
-      responses:
-        '200':
-          description: Note added to the transaction successfully
-          schema: 
-            $ref: '#/definitions/TransactionResponseNote'
-        '401':
-          description: Unauthorized user
-        '404':
-          description: Note not created
         '500':
           description: Internal Server Error
-  /transactions/{transactionID}/note/{noteID}:
-    put:
+    patch:
       tags:
         - Transactions Module
-      summary: Modify transaction's note
-      description: API for modifying a note of a transaction
-      security: 
-        - Bearer: []
+      summary: Update Transaction Notes
+      description: Update the notes for an existing transaction
       parameters:
-        - in: path
-          name: transactionID
-          description: ID of a transaction
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
           required: true
           type: string
         - in: path
-          name: noteID
-          description: ID of a note
+          name: transactionId
+          description: ID of the transaction
           required: true
           type: string
         - in: body
-          name: note
-          description: Modify transaction's note
+          name: notes
+          description: New notes for the transaction
           required: true
-          schema: 
-            $ref: '#/definitions/TransactionNote'
-      responses:
-        '200':
-          description: Note modified successfully
           schema:
-            $ref: '#/definitions/TransactionResponseNote'
-        '401':
-          description: Unauthorized user
-        '404':
-          description: Note not modified
-        '500':
-          description: Internal Server Error
-    delete:
-      tags:
-        - Transactions Module
-      summary: Delete transaction's note
-      description: API for deleting a note of a transaction
-      security:
-        - Bearer: []
-      parameters:
-        - in: path
-          name: transactionID
-          description: ID of a transaction
-          required: true
-          type: string
-        - in: path
-          name: noteID
-          description: ID of a note
-          required: true
-          type: string
+            type: string
       responses:
         '200':
-          description: Note deleted successfully
+          description: Transaction notes updated successfully
+          schema:
+            $ref: '#/definitions/Transaction'
         '401':
-          description: Unauthorized user
+          description: Unauthorized
         '404':
-          description: Note not deleted
+          description: Transaction not found
         '500':
           description: Internal Server Error
-
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -327,4 +296,22 @@ definitions:
     type: object
     properties:
       userName:
+        type: string
+  TransactionList:
+    type: array
+    items:
+      $ref: '#/definitions/Transaction'
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+      amount:
+        type: number
+      category:
+        type: string
+      date:
+        type: string
+        format: date-time
+      notes:
         type: string

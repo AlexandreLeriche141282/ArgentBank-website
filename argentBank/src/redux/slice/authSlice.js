@@ -12,6 +12,7 @@ const loadFromStorage = () => {
   return { token: null, isAuthenticated: false, user: null };
 };
 
+// Token & profil utilisateur stockés dans le localStorage en cas de succés
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
@@ -27,6 +28,7 @@ export const login = createAsyncThunk(
   }
 );
 
+// Charger le profil utilisateur
 export const loadUser = createAsyncThunk(
   'auth/loadUser',
   async (_, { getState, rejectWithValue }) => {
@@ -44,6 +46,7 @@ export const loadUser = createAsyncThunk(
   }
 );
 
+//  L'état initial de l'authentification est chargé à partir du localStorage
 const authSlice = createSlice({
   name: 'auth',
   initialState: {

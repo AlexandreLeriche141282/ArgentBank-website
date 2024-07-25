@@ -2,7 +2,6 @@
 .features {
     display: flex;
     flex-direction: column;
-    height: 300px;
   }
   .features > * {
     flex: 1;

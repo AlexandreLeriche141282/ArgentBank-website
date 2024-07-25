@@ -9,27 +9,35 @@ import './user.css';
 
 export default function User() {
     const dispatch = useDispatch();
+
+    // Récupérer les états depuis le store Redux
     const { data: userData, loading, error } = useSelector(state => state.userProfile);
     const { token } = useSelector(state => state.auth);
+
+    // États locaux pour la gestion de l'édition de profil
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState({ firstName: '', lastName: '' });
 
+    // Charger le profil utilisateur lorsque le token change
     useEffect(() => {
         if (token) {
             dispatch(fetchUserProfile(token));
         }
     }, [dispatch, token]);
 
+    // Mettre à jour les états locaux lorsque les données utilisateur changent
     useEffect(() => {
         if (userData) {
             setEditedName(userData);
         }
     }, [userData]);
 
+    // Activer le mode édition
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
+    // Sauvegarder les modifications de profil
     const handleSaveClick = async (e) => {
         e.preventDefault();
         try {
@@ -42,13 +50,16 @@ export default function User() {
         }
     };
 
+    // Mettre à jour les valeurs des champs d'édition
     const handleInputChange = (e) => {
         setEditedName({ ...editedName, [e.target.name]: e.target.value });
     };
 
+    // Afficher un message de chargement ou d'erreur si nécessaire
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
+    // Simuler des comptes bancaires pour l'affichage
     const accounts = [
         {
             title: "Argent Bank Checking (x8349)",
@@ -66,6 +77,7 @@ export default function User() {
             description: "Current Balance"
         }
     ];
+
     return (
         <main className="main bg-dark">
             <div className="header">
